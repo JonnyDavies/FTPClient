@@ -1,9 +1,12 @@
 
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Random;
 
 public class FTPClient {
 	
@@ -17,11 +20,12 @@ public class FTPClient {
 		} 
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			  e.printStackTrace();
 		}		
 	}
 	
-	public void sendFile(String file) throws IOException {
+	public void sendFile(String file) throws IOException 
+	{
 		
 		DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 		FileInputStream fis = new FileInputStream(file);
@@ -35,6 +39,7 @@ public class FTPClient {
 		while (fis.read(buffer) > 0) {
 			dos.write(buffer);
 		}
+		
 		
 		fis.close();
 		dos.close();	
