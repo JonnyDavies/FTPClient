@@ -29,14 +29,26 @@ import javafx.stage.Stage;
 
 public class FTPMain extends Application {
     
-	//Create a threadpool    
+	//Create a threadpool   
+	
+	
+	
+	
     private static final int NTHREADS = 10;
     private static final Executor exec = Executors.newFixedThreadPool(NTHREADS); 
     private TempClient fc;
+    
+    
+    
+    
 
     public static void main(String[] args){
         launch(args);
     }
+    
+    
+    
+    
 
     @Override
     public void start(Stage primaryStage){
