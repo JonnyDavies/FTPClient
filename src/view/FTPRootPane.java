@@ -3,9 +3,14 @@ package view;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -13,6 +18,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class FTPRootPane extends VBox
@@ -23,16 +30,25 @@ public class FTPRootPane extends VBox
 	private PasswordField p1;
 	private FTPLocalFileSystemPane lfsp;
 	private FTPRemoteFileSystemPane rfsp;
+	private FTPStatusPane ftpsp;
+	
 	
 	public FTPRootPane()
 	{   
         l1 = new Label("Host: ");
+        l1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        
         t1 = new TextField();
    
         l2 = new Label("Password: ");
+        l2.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
         p1 = new PasswordField();
         
         l3 = new Label("Port: ");
+        l3.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
+
         t2 = new TextField();
         
         b1 = new Button();
@@ -41,15 +57,17 @@ public class FTPRootPane extends VBox
         // ========== Top Menu bar ============ //
         HBox menu = new HBox();
         menu.setSpacing(10);
+        menu.setPadding(new Insets(3, 0, 0, 3));
         menu.getChildren().addAll(this.l1, this.t1, this.l2, this.p1, this.l3, this.t2, this.b1);
         // ========== Top Menu bar ============ //
 
         
-        // ========== Status bar ============ //
-        VBox vb1 = new VBox();
-        TextArea text = new TextArea();
-        vb1.getChildren().addAll(text);
-        // ========== Status bar ============ //
+        // ========== Status pane ============ //
+        ftpsp = new FTPStatusPane();
+        ftpsp.prefWidthProperty().bind(this.widthProperty());
+        ftpsp.prefHeightProperty().bind(this.heightProperty().divide(3));
+
+        // ========== Status pane ============ //
         
        
         // ========== File Systems View ============ //
@@ -71,12 +89,35 @@ public class FTPRootPane extends VBox
         // ========== Bottom Transaction Result Pane ============ //
         VBox vb2 = new VBox();
         Label l = new Label("Transaction Result: ");  
+        l.setPadding(new Insets(6, 0, 0, 3));
+        l.setStyle("-fx-background-color :  #e6e6e6");
+        l.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        l.prefWidthProperty().bind(this.widthProperty());
+
+
+        Separator s1 = new Separator();
+        s1.setOrientation(Orientation.HORIZONTAL);
+        s1.setStyle("-fx-background-color :  #737373");
+        
+        Separator s2 = new Separator();
+        s2.setOrientation(Orientation.HORIZONTAL);
+        s2.setStyle("-fx-background-color :  #737373");
+        
         TextArea text2 = new TextArea();
-        vb2.getChildren().addAll(l, text2);
+        vb2.getChildren().addAll(s1, l, s2, text2);
         // ========== Bottom Transaction Result Pane ============ //
+        
+        Separator s3 = new Separator();
+        s3.setOrientation(Orientation.HORIZONTAL);
+        s3.setStyle("-fx-background-color :  #737373");
+        
+        Separator s4 = new Separator();
+        s4.setOrientation(Orientation.HORIZONTAL);
+        s4.setStyle("-fx-background-color :  #737373");
 
         
-        this.getChildren().addAll(menu, vb1, filesystem, vb2);
+        this.getChildren().addAll(s3, menu, s4, ftpsp, filesystem, vb2);
+        this.setStyle( "-fx-background-color :  #e6e6e6");
         this.setPrefSize(1200, 600);
 		
 	}
@@ -90,5 +131,31 @@ public class FTPRootPane extends VBox
 	{
 		return this.lfsp;
 	}
+	
+	public  FTPStatusPane getSP()
+	{
+		return this.ftpsp;
+	}
+	
+	public void addConnectAction(EventHandler<ActionEvent> handler) 
+	{
+		b1.setOnAction(handler);
+    }
+	
+	public String getHost()
+	{
+		return t1.getText();
+	}
+
+	public String getPort()
+	{
+		return t2.getText();
+	}
+	
+	public String getPassword()
+	{
+	    return p1.getText();
+	}
+
 
 }

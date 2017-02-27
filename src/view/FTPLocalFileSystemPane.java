@@ -1,29 +1,35 @@
 package view;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;
 
-import javax.swing.ImageIcon;
 
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SelectionModel;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 
@@ -32,87 +38,108 @@ public class FTPLocalFileSystemPane extends VBox {
     private String ROOT_FOLDER = "C:/Users/Jonny/Desktop/LocalFiles"; // TODO: change or make selectable
     private String selectedItem = "";
     private Button b1, b2;
-    private TreeView<Path> local;
+    private TreeView<String> local;
     private TreeItem<Path> treeItem;
-    private Label l1;
+    private Label l1, status;
     private HBox bg;
+    private ArrayList<String> localFiles;
 	
 	public FTPLocalFileSystemPane ()
 	{
-	    local = new TreeView<Path>(this.populateTree());
-        l1 = new Label("Local File System: "); 
+	    local = new TreeView<String>();
+	    local.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	    
+        l1 = new Label("Local File System: ");
+        l1.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        l1.setPadding(new Insets(3, 0, 0, 3));
+        l1.setStyle("-fx-background-color :  #e6e6e6");
+        l1.prefWidthProperty().bind(this.widthProperty());
+
         
         bg = new HBox();
         b1 = new Button();
-        b1.setText("Upload");
+        b1.setText("Upload File(s)");
+        
         b2 = new Button();
-        b2.setText("Refresh");
+        b2.setText("Refresh Directory");
         bg.getChildren().addAll(b1, b2);
+        bg.setAlignment(Pos.CENTER);
+        bg.setStyle("-fx-background-color :  #f2f2f2");
         
+        status = new Label("Not connected to any server.");  
         
-        local.getSelectionModel()
-        .selectedItemProperty()
-        .addListener((observable, oldValue, newValue) -> selectedItem = newValue.getValue().toString());
+        status.setFont(new Font("Arial", 12));
+        status.setPadding(new Insets(0, 0, 0, 3));
+        status.setStyle("-fx-background-color :  #e6e6e6");
+        status.setStyle("-fx-font-weight: bold");
+        status.prefWidthProperty().bind(this.widthProperty());
         
-//        b2 = new Button("Get Selected");
-//        b2.setOnAction(e -> System.out.println("Button Press" + selectedItem));
+        Separator s1 = new Separator();
+        s1.setOrientation(Orientation.HORIZONTAL);
+        s1.setStyle("-fx-background-color :  #737373");
         
-	    this.getChildren().addAll(l1, local, bg);
+        Separator s2 = new Separator();
+        s2.setOrientation(Orientation.HORIZONTAL);
+        s2.setStyle("-fx-background-color :  #737373");       
+
+        Separator s3 = new Separator();
+        s3.setOrientation(Orientation.HORIZONTAL);
+        s3.setStyle("-fx-background-color :  #737373");
+        
+        Separator s4 = new Separator();
+        s4.setOrientation(Orientation.HORIZONTAL);
+        s4.setStyle("-fx-background-color :  #737373");
+
+        this.setSpacing(2);
+        this.setStyle( "-fx-background-color :  #e6e6e6");
+	    this.getChildren().addAll(s1, l1, s2, local, s3, status,  s4,  bg);
 	}
 
-	public TreeItem<Path> populateTree()
+	
+	
+	public ArrayList<String> populateTree()
 	{
-		// create root
+		
+		localFiles = new ArrayList<String>();
+		
         treeItem = new TreeItem<Path>();
-        treeItem.setValue(Paths.get("C:/Users/Jonny/Desktop/LocalFiles"));     
+        treeItem.setValue(Paths.get("C:/Users/Jonny/Desktop/LocalFiles")); 
         treeItem.setExpanded(true);
+        localFiles.add(treeItem.getValue().toString());
 
-        // create tree structure
+
         try {
 			createTree(treeItem);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
 
         // sort tree structure by name
         treeItem.getChildren().sort( Comparator.comparing( new Function<TreeItem<Path>, String>() 
         {
             @Override
             public String apply(TreeItem<Path> t) {
-            	System.out.println(t.getValue().toString().toLowerCase());
                 return t.getValue().toString().toLowerCase();
             }
         }));
 
-        	    
-        return treeItem;
-	    
+        return localFiles;
 	}
 	
-   public static void createTree(TreeItem<Path> rootItem) throws IOException 
+   public void createTree(TreeItem<Path> rootItem) throws IOException 
     {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootItem.getValue())) 
         {
             for (Path path : directoryStream) 
             {
-//                Path p = path.getFileName();
-//                System.out.println("This is newItem string -> " + p);
+            	localFiles.add(path.getFileName().toString());
  
             	TreeItem<Path> newItem = new TreeItem<Path>(path);
                 newItem.setExpanded(true);
-                // newItem.setGraphic(new ImageView(folderExpandImage));
-                // System.out.println("This is newItem syso -> " + newItem);
                 
                 rootItem.getChildren().add(newItem);
-                
-                // testing this so can see what we need from server file system
-                	// if we can turn a string into a path then we're good
-                	// as all a path is really just -> "C://Users/Jonny/Desktop/Whatever.txt
-                	// So nothing special
-                	// but still may have to re-write this function no biggie!
-                
-               // System.out.println("This is path syso -> " + path);
 
                 if (Files.isDirectory(path)) 
                 {
@@ -121,9 +148,7 @@ public class FTPLocalFileSystemPane extends VBox {
             }
         }
     }
-   
-	
-   
+ 
 	public void addUploadAction(EventHandler<ActionEvent> handler) 
 	{
       b1.setOnAction(handler);
@@ -133,15 +158,26 @@ public class FTPLocalFileSystemPane extends VBox {
 	{
       b2.setOnAction(handler);
     }
-	
-	public void repopulateTree()
-	{	
-	    local.setRoot(this.populateTree());
+
+	public TreeView<String> getTreeLocal()
+	{
+		return local;
 	}
 	
-	public String getSelectedItem()
+	public void repopulateTree(TreeItem<String> value)
+	{	
+	    local.setRoot(value);
+	}
+	
+	public String getLocalSelectedItem()
 	{
 		return this.selectedItem;
+	}
+	
+	public void setStatusLabel (int dirSize, int fileNum)
+	{
+		this.status.setText(dirSize + " Directory: " + fileNum + " Files.");
+		
 	}
 
 }

@@ -88,7 +88,7 @@ public class FTPMain extends Application {
 	            Runnable task = new Runnable(){
 	                public void run (){
 	                  try {
-						download();
+						// download();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -104,7 +104,7 @@ public class FTPMain extends Application {
         // add scroll panes to everything       
         // initialise client socket and get connection with server 
         
-        this.fc = new TempClient("localhost", 4446);	
+        // this.fc = new TempClient("localhost", 4446);	
         
 
         VBox root = new VBox();
@@ -142,10 +142,10 @@ public class FTPMain extends Application {
 //		TempClient fc = new TempClient("localhost", 4446, "C:\\Users\\Jonny\\Desktop\\cat.jpg");
 //    }
     
-    public void download() throws Exception 
-    {
-    	this.fc.receiveFile();
-    }
+//    public void download() throws Exception 
+//    {
+//    	this.fc.receiveFile();
+//    }
    
     public void upload() throws Exception 
     {
