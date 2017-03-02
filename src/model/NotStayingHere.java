@@ -178,8 +178,8 @@ public class NotStayingHere {
 		  fileTransactions.put(filename, 0);
 	}
 	
-	public void addFileTransactionProgress(String filename, Integer byteSoFar)
-	{
-		  fileTransactions.
-	}
+//	public void addFileTransactionProgress(String filename, Integer byteSoFar)
+//	{
+//		  fileTransactions.
+//	}
 }
