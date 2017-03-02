@@ -5,14 +5,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
@@ -30,6 +34,14 @@ public class FTPController {
 	private NotStayingHere fc;
     private static final int NTHREADS = 10;
     private static final Executor exec = Executors.newFixedThreadPool(NTHREADS); 
+    private ExecutorService	executor  = Executors.newFixedThreadPool(10, new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+          Thread t = new Thread(r);
+          t.setDaemon(true);
+          return t;
+        }
+    });
     private final Image rootIconFolder = new Image(getClass().getResourceAsStream("folder.png"));
     private final Image rootIconDoc = new Image(getClass().getResourceAsStream("doc.png"));
 
@@ -37,9 +49,7 @@ public class FTPController {
 	public FTPController (FTPRootPane view, FTPUser model)
 	{
 		this.view = view;
-		this.model = model;
-		
-		
+		this.model = model;	
 		this.attachEventHandlers();
 		this.refreshLocalView();
 	}
@@ -56,22 +66,17 @@ public class FTPController {
 	
 	public void connectEvent() 
 	{
-		
-		
-		// get host IP
-		// get port
-		
-		// we'll connect with socket and then ask for password.
-		
+				
 		System.out.println(this.view.getHost());
 		System.out.println(this.view.getPort());
 		System.out.println(this.view.getPassword());
 		
 		/** we need validation for the port text field **/
 		 
-		String host = this.view.getHost();
-		String port = this.view.getPort();
+		String host     = this.view.getHost();
+		String port     = this.view.getPort();
 		String password = this.view.getPassword();
+		
 		
 		// implement password
 		this.fc = new NotStayingHere(host, Integer.parseInt(port)); 
@@ -79,6 +84,9 @@ public class FTPController {
 		if(this.fc.getConnectionStatus())
 		{
 			System.out.println("Connected!");
+			this.view.getSP().makeCommandStatusUpdate("Attempting to connect to server ...");
+	    	this.view.getSP().makeGeneralStatusUpdate("Connection established with server.");
+	    	this.view.getSP().makeGeneralStatusUpdate("Autheticating client with server ....");
 			
 			// NOW AUTHENTICATE
 			try 
@@ -87,21 +95,28 @@ public class FTPController {
 				if(res)
 				{
 					// we connected so refresh remote 
+			    	this.view.getSP().makeSuccessStatusUpdate("Successfully authenticted with server.");
 					this.refreshRemoteEvent();
+				}
+				else
+				{
+					this.view.getSP().makeErrorStatusUpdate("Authentication failed.");
 				}
 			} 
 			catch (IOException e) 
 			{
 				e.printStackTrace();
+
 			}
 		}
 		else
 		{
 			System.out.println("Not Connected :(");
+			this.view.getSP().makeErrorStatusUpdate("Failed to establish a connection.");
+
 		}
 		
 	}
-	
 	
 	public void refreshEvent()
 	{
@@ -206,13 +221,27 @@ public class FTPController {
 	
     public void download(String file) throws Exception 
     {
-    		this.fc.receiveFile(file);
+   		// add transaction to pane
+//	    Platform.runLater(new Runnable() {
+//           public void run() {
+//       		view.getSP().makeCommandStatusUpdate("Attempting to download " + file + " from server...");
+//           }
+//         });
+	    
+    	this.fc.receiveFile(file);
+   		
     }
     
     
 	/** 		STAYING IT IS NOT 		**/
     public void additionalDownload(String file) throws Exception 
     {
+//	   Platform.runLater(new Runnable() {
+//           public void run() {
+//       		view.getSP().makeCommandStatusUpdate("Attempting to download " + file + " from server...");
+//           }
+//         });
+//	   
     	TempClient fc = new TempClient("localhost", 4446, file);
     }
     
@@ -220,13 +249,20 @@ public class FTPController {
 
     public void upload(String file) throws Exception 
     {
-          this.fc.sendFile(file);
+//        Platform.runLater(new Runnable() {
+//            public void run() {
+//        	    view.getSP().makeCommandStatusUpdate("Attempting to upload " + file + " to server...");
+//            }
+//          });
+        
+        this.fc.sendFile(file);
     }
     
     
 	/** 		STAYING IT IS NOT 		**/
     public void additionalUpload(String file) throws Exception 
     {
+	   // this.view.getSP().makeCommandStatusUpdate("Attempting to upload " + file + " to server...");
     	TempClient fc = new TempClient("localhost", 4446, file);
     }
     
@@ -241,12 +277,13 @@ public class FTPController {
           }
         });
     }
-    
 
     
     /** TEMP FUNCITON **/ 
     public void refreshRemoteView(ArrayList<String> files)
     {   
+    	this.view.getSP().makeCommandStatusUpdate("Refreshing Remote File System ...");
+    	this.view.getSP().makeGeneralStatusUpdate("Remote File System up to date.");
     
     	TreeItem<String> treeRoot = new TreeItem<String>(files.get(0),new ImageView(rootIconFolder));
     	treeRoot.setExpanded(true);
@@ -284,9 +321,9 @@ public class FTPController {
     		treeRoot.getChildren().add(new TreeItem<String>(files.get(i), new ImageView(rootIconDoc)));
     	}
 
-        this.view.getLocalFSP().repopulateTree(treeRoot);
-        
+        this.view.getLocalFSP().repopulateTree(treeRoot);        
     }
 
+    
     
 }

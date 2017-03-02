@@ -38,7 +38,7 @@ public class TempClient {
 			this.dos = new DataOutputStream(s.getOutputStream());
 			this.dis = new DataInputStream(s.getInputStream());
 
-		    // this.sendFile(file);
+		    //this.sendFile(file);
 			 
 		    this.receiveFile(file);
 		} 
