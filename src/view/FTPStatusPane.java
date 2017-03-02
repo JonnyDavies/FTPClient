@@ -25,12 +25,14 @@ public class FTPStatusPane extends ScrollPane {
 		
 		Text t1 = new Text("Initialising application.");
 		text.getChildren().add(t1);
+		
 		this.makeSuccessStatusUpdate("Application intialised.");
 		Text t2 = new Text("\nRetrieving directory listing for C:\\Users\\Jonny\\Desktop\\LocalFiles ...");
 		Text t3 = new Text("\nDirectory listing received for C:\\Users\\Jonny\\Desktop\\LocalFiles.");
 
 		text.getChildren().addAll(t2, t3);
 		this.setContent(text);		
+		this.setStyle("-fx-background-color :  #ffffff");
 		this.vvalueProperty().bind(text.heightProperty());
 
 	}

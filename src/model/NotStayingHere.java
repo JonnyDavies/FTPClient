@@ -25,7 +25,8 @@ public class NotStayingHere {
 	private DataInputStream dis;
 	private ArrayList<String> remoteFiles;
 	private boolean connected;
-	private HashMap<String,Integer> fileTransactions;
+	private HashMap<String,Long> fileTransactionsSizes;
+
 
 	
 	public NotStayingHere(String host, int port)
@@ -36,7 +37,7 @@ public class NotStayingHere {
 			connected = true;
 			this.dos = new DataOutputStream(s.getOutputStream());
 			this.dis = new DataInputStream(s.getInputStream());
-			fileTransactions = new HashMap<String,Integer>();
+			fileTransactionsSizes = new HashMap<String,Long>();
 
 		} 
 		catch (Exception e) 
@@ -95,6 +96,10 @@ public class NotStayingHere {
         FileInputStream fin = new FileInputStream("C:\\Users\\Jonny\\Desktop\\LocalFiles\\" + file);
         
         
+    	// read long and store in transaction size
+        File f = new File("C:\\Users\\Jonny\\Desktop\\LocalFiles\\" + file);	
+		this.addFileTransactionSize(file, f.length());
+        
         int ch;
         
         do
@@ -105,6 +110,13 @@ public class NotStayingHere {
         while(ch!=-1);
         
         fin.close();
+        
+        
+      
+
+        //  remove file size and transaction progress
+
+                   
 	}
 	
 	public void receiveFile(String file) throws IOException 
@@ -119,30 +131,40 @@ public class NotStayingHere {
 		
 		if(msgFromServer.compareTo("READY") == 0)
         {
-            System.out.println("Receiving File ...");
             
+			
+			// read long and store in transaction size
+			Long filesize = this.dis.readLong();
+			this.addFileTransactionSize(file, filesize);
+		
+			
+			System.out.println("Receiving File ...");            
             FileOutputStream fout = new FileOutputStream("C:\\Users\\Jonny\\Desktop\\LocalFiles\\" + file);
+            
             
             int ch;
             String temp;
-            int test = 0;
+           
             
             do
             {
                 temp = this.dis.readUTF();
                 ch = Integer.parseInt(temp);
+                
                 if(ch!=-1)
                 {
                     fout.write(ch);     
 
                 }
-                test++;
-                System.out.println(test);
+               
+                
             }
             while(ch!=-1);
             
             fout.close();
-		
+            
+            // remove transaction and size as its not needed 
+            this.removeFileTransactionSizeOnCompletetion(file);
         }	
 	}
 	
@@ -173,13 +195,26 @@ public class NotStayingHere {
 			return remoteFiles;	
 	 }
 	
-	public void addFileTransaction(String filename)
+
+	// ============================ Below file sizes, above file transaction progress ============================== //
+	
+	public HashMap<String,Long> getFileTransactionSizes()
 	{
-		  fileTransactions.put(filename, 0);
+		return fileTransactionsSizes;
 	}
 	
-	public void addFileTransactionProgress(String filename, Integer byteSoFar)
+	public Long getFileTransactionSize(String filename)
 	{
-		  fileTransactions.
+		return fileTransactionsSizes.get(filename);
+	}
+	
+	public void addFileTransactionSize(String filename, Long size)
+	{
+		fileTransactionsSizes.put(filename, size);
+	}
+	
+	public void removeFileTransactionSizeOnCompletetion(String filename)
+	{
+		fileTransactionsSizes.remove(filename);
 	}
 }

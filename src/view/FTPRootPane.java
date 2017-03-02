@@ -12,9 +12,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.ProgressBarTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Path;
@@ -31,6 +35,7 @@ public class FTPRootPane extends VBox
 	private FTPLocalFileSystemPane lfsp;
 	private FTPRemoteFileSystemPane rfsp;
 	private FTPStatusPane ftpsp;
+	// private TableView<TestTask> table;
 	
 	
 	public FTPRootPane()
@@ -86,6 +91,10 @@ public class FTPRootPane extends VBox
         // ========== File Systems View ============ //
         
         
+        
+        
+        
+        
         // ========== Bottom Transaction Result Pane ============ //
         VBox vb2 = new VBox();
         Label l = new Label("Transaction Result: ");  
@@ -103,8 +112,41 @@ public class FTPRootPane extends VBox
         s2.setOrientation(Orientation.HORIZONTAL);
         s2.setStyle("-fx-background-color :  #737373");
         
-        TextArea text2 = new TextArea();
-        vb2.getChildren().addAll(s1, l, s2, text2);
+        
+        
+//        table = new TableView<TestTask>();
+//  
+//        TableColumn<TestTask, String> nameCol = new TableColumn("File Name");
+//        nameCol.setCellValueFactory(new PropertyValueFactory<TestTask, String>("PDF"));
+//        nameCol.prefWidthProperty().bind(this.widthProperty().divide(5));
+//  
+//        TableColumn<TestTask, String> directionCol = new TableColumn("Direction");
+//        directionCol.setCellValueFactory(new PropertyValueFactory<TestTask, String>("PDF"));
+//        directionCol.prefWidthProperty().bind(this.widthProperty().divide(5));
+//      
+//        TableColumn<TestTask, String> typeCol = new TableColumn("File Type");
+//        typeCol.setCellValueFactory(new PropertyValueFactory<TestTask, String>("PDF"));
+//        typeCol.prefWidthProperty().bind(this.widthProperty().divide(5));
+//        
+//        TableColumn<TestTask, String> statusCol = new TableColumn("Status");
+//        statusCol.setCellValueFactory(new PropertyValueFactory<TestTask, String>("message"));
+//        statusCol.prefWidthProperty().bind(this.widthProperty().divide(5));
+//        
+//        TableColumn<TestTask, Double> progressCol = new TableColumn("Progress");
+//        progressCol.setCellValueFactory(new PropertyValueFactory<TestTask, Double>("progress"));
+//        progressCol.setCellFactory(ProgressBarTableCell.<TestTask> forTableColumn());
+//        progressCol.prefWidthProperty().bind(this.widthProperty().divide(5));
+//
+//        table.getColumns().addAll(nameCol, directionCol, typeCol, statusCol, progressCol);
+        
+//        vb2.getChildren().addAll(s1, l, s2, table);
+        
+        vb2.getChildren().addAll(s1, l, s2);
+
+        vb2.prefHeightProperty().bind(this.heightProperty().divide(3));
+        
+        
+        
         // ========== Bottom Transaction Result Pane ============ //
         
         Separator s3 = new Separator();
@@ -156,6 +198,5 @@ public class FTPRootPane extends VBox
 	{
 	    return p1.getText();
 	}
-
 
 }
