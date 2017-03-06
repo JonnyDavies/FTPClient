@@ -1,5 +1,11 @@
 package view;
 
+import java.text.DecimalFormat;
+
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,10 +17,9 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Path;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -25,26 +30,26 @@ public class FTPRemoteFileSystemPane extends VBox
 	private TreeView<String> remote;
 	private String selectedItem = "";
 	private Label status;
+	private GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
+
 	
 	
 	public FTPRemoteFileSystemPane ()
 	{
-        remote = new TreeView<String>();  
+    remote = new TreeView<String>();
 	    remote.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        Label l2 = new Label("Remote File System: ");  
+        Label l2 = new Label("Remote File System ");  
         l2.setFont(Font.font("Arial", FontWeight.BOLD, 13));
         l2.setPadding(new Insets(3, 0, 0, 3));
         l2.setStyle("-fx-background-color :  #e6e6e6");
         l2.prefWidthProperty().bind(this.widthProperty());
 
         bg = new HBox();
-        b1 = new Button();
-        b1.setText("Download File(s)");
-
+        b1 = new Button("Download File(s)", fontAwesome.create(FontAwesome.Glyph.DOWNLOAD).color(Color.BLUE));
         
-        b2 = new Button();
-        b2.setText("Refresh Directory");
+        b2 =new Button("Refresh Directory", fontAwesome.create(FontAwesome.Glyph.REFRESH).color(Color.GREEN));
+   
 
         bg.getChildren().addAll(b1, b2);
         bg.setAlignment(Pos.CENTER);
@@ -113,10 +118,10 @@ public class FTPRemoteFileSystemPane extends VBox
 		this.status.setText(status);
 	}
 	
-	public void setStatusLabel (int dirSize, int fileNum)
+	public void setStatusLabel (int dirSize, int fileNum, long bytes)
 	{
-		this.status.setText(dirSize + " Directory: " + fileNum + " Files.");
-		
+		DecimalFormat formatter = new DecimalFormat("#,###,###,###");		
+		this.status.setText(dirSize + " Directory. " + fileNum + " Files." + " Total size: " + formatter.format(bytes) + " bytes");		
 	}
 	
 
